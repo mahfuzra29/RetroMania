@@ -44,7 +44,7 @@ export default function PresentationView({
               </span>
               {isStandalone && (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-                  Jendela Terpisah
+                  Tab Terpisah
                 </span>
               )}
             </div>
@@ -70,10 +70,10 @@ export default function PresentationView({
             <button
               onClick={onOpenPopout}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition active:scale-95"
-              title="Buka Layar Presentasi di Jendela Baru agar bisa share screen sambil mengetik di jendela utama"
+              title="Buka Layar Presentasi di Tab Baru agar bisa share screen sambil mengetik di tab utama"
             >
               <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Buka di Jendela Baru</span>
+              <span>Buka di Tab Baru</span>
             </button>
           )}
         </div>

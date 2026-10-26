@@ -49,7 +49,7 @@ export default function SubmissionView({
   const handleOpenPopout = () => {
     sound.playPop();
     const url = `${window.location.origin}/?room=${roomState.id}&view=presentation`;
-    window.open(url, '_blank', 'width=1200,height=800,menubar=no,toolbar=no,location=no');
+    window.open(url, '_blank');
   };
 
   // Filter cards for the current stage
@@ -99,14 +99,14 @@ export default function SubmissionView({
           </button>
         </div>
 
-        {/* Pop-out Presentation Window button */}
+        {/* Tab Share Screen Terpisah button */}
         <button
           onClick={handleOpenPopout}
           className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition"
-          title="Buka Layar Presentasi di Jendela Baru agar Anda bisa share screen jendela tersebut sambil mengetik kartu di sini"
+          title="Buka Layar Presentasi di Tab Baru agar Anda bisa share screen tab tersebut sambil mengetik kartu di sini"
         >
           <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Buka Jendela Share Screen Terpisah</span>
+          <span>Buka Tab Share Screen Terpisah</span>
         </button>
       </div>
 
