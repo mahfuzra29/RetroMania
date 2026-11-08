@@ -48,7 +48,7 @@ export default function VotingView({
               {isWentWell ? 'Evaluasi Kartu "Went Well"' : 'Evaluasi Kartu "Went Bad"'}
             </h2>
             <p className="text-xs text-slate-400">
-              Semua kartu telah dibuka! Berikan upvote (👍) atau downvote (👎) pada kartu yang paling mewakili suara Anda.
+              Semua kartu telah dibuka! Berikan upvote (👍) pada kartu yang paling mewakili suara Anda.
             </p>
           </div>
         </div>

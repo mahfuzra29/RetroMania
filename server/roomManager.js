@@ -222,23 +222,21 @@ export class RoomManager {
     if (!card) return null;
 
     const currentVote = card.votes[participantId] || 0;
-    // Toggle logic: if user clicked the same vote again, remove it
-    if (currentVote === value) {
+    // Toggle logic: if user clicked the vote again, remove it
+    if (currentVote === 1) {
       delete card.votes[participantId];
     } else {
-      card.votes[participantId] = value; // 1 or -1
+      card.votes[participantId] = 1;
     }
 
-    // Recalculate tallies
+    // Recalculate tallies (Upvotes only)
     let up = 0;
-    let down = 0;
     for (const v of Object.values(card.votes)) {
       if (v > 0) up++;
-      else if (v < 0) down++;
     }
     card.upvotes = up;
-    card.downvotes = down;
-    card.score = up - down;
+    card.downvotes = 0;
+    card.score = up;
 
     return room;
   }

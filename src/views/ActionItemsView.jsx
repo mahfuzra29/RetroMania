@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-  CheckSquare,
-  Square,
   Plus,
   Trash2,
   User,
@@ -20,7 +18,6 @@ export default function ActionItemsView({
   isHost,
   participant,
   onCreateActionItem,
-  onToggleActionItem,
   onDeleteActionItem,
   onCloseRoom,
 }) {
@@ -224,36 +221,17 @@ export default function ActionItemsView({
               </div>
             ) : (
               <div className="space-y-2.5">
-                {actionItems.map((ai) => (
+                {actionItems.map((ai, index) => (
                   <div
                     key={ai.id}
-                    className={`flex items-start gap-3 p-3.5 rounded-2xl border transition ${
-                      ai.completed
-                        ? 'bg-emerald-950/10 border-emerald-500/20 text-slate-400'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-100 hover:border-slate-700'
-                    }`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl border bg-slate-950/60 border-slate-800 text-slate-100 hover:border-slate-700 transition"
                   >
-                    <button
-                      onClick={() => {
-                        sound.playPop();
-                        onToggleActionItem(ai.id);
-                      }}
-                      className="mt-0.5 text-slate-400 hover:text-emerald-400 transition"
-                      title={ai.completed ? 'Tandai Belum' : 'Tandai Selesai'}
-                    >
-                      {ai.completed ? (
-                        <CheckSquare className="w-4 h-4 text-emerald-400" />
-                      ) : (
-                        <Square className="w-4 h-4 text-slate-500" />
-                      )}
-                    </button>
+                    <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {index + 1}
+                    </span>
 
                     <div className="min-w-0 flex-1">
-                      <p
-                        className={`text-sm font-medium ${
-                          ai.completed ? 'line-through text-slate-500' : 'text-slate-100'
-                        }`}
-                      >
+                      <p className="text-sm font-medium text-slate-100">
                         {ai.text}
                       </p>
 

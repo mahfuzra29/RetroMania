@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThumbsUp, ThumbsDown, Trash2, Lock, Sparkles, Check, Link as LinkIcon } from 'lucide-react';
+import { ThumbsUp, Trash2, Lock, Sparkles, Check, Link as LinkIcon } from 'lucide-react';
 import { sound } from '../utils/sound';
 
 export default function RetroCard({
@@ -105,64 +105,39 @@ export default function RetroCard({
       <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
         {/* Voting UI FR 3.2 */}
         {isVotingStage && !isMasked ? (
-          <div className="flex items-center gap-1.5">
-            {/* Upvote Button */}
+          <div className="flex items-center justify-between w-full">
+            {/* Upvote Button Only */}
             <button
               onClick={(e) => handleVote(e, 1)}
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition active:scale-90 ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95 ${
                 card.myVote === 1
-                  ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60'
               }`}
-              title="Upvote (Suka)"
+              title={card.myVote === 1 ? 'Batalkan Upvote' : 'Upvote (Suka)'}
             >
-              <ThumbsUp className={`w-3.5 h-3.5 ${card.myVote === 1 ? 'fill-slate-950' : ''}`} />
+              <ThumbsUp className={`w-3.5 h-3.5 ${card.myVote === 1 ? 'fill-slate-950 text-slate-950' : 'text-emerald-400'}`} />
               <span>{card.upvotes || 0}</span>
             </button>
 
-            {/* Downvote Button */}
-            <button
-              onClick={(e) => handleVote(e, -1)}
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition active:scale-90 ${
-                card.myVote === -1
-                  ? 'bg-rose-500 text-white font-bold shadow-sm'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-              }`}
-              title="Downvote (Kurang Suka)"
-            >
-              <ThumbsDown className={`w-3.5 h-3.5 ${card.myVote === -1 ? 'fill-white' : ''}`} />
-              <span>{card.downvotes || 0}</span>
-            </button>
+            {isMine && (
+              <span className="text-xs text-indigo-400 font-medium">Kartu Anda</span>
+            )}
           </div>
         ) : (
-          <div className="text-xs text-slate-500 font-mono">
-            {isMine ? <span className="text-indigo-400 font-medium">Kartu Anda</span> : ''}
-          </div>
-        )}
-
-        {/* Total Score FR 3.3 */}
-        {isVotingStage && !isMasked && (
-          <div className="flex items-center gap-1 font-mono text-xs font-bold">
-            <span className="text-slate-400">Skor:</span>
-            <span
-              className={
-                card.score > 0
-                  ? 'text-emerald-400'
-                  : card.score < 0
-                  ? 'text-rose-400'
-                  : 'text-slate-400'
-              }
-            >
-              {card.score > 0 ? `+${card.score}` : card.score}
-            </span>
-          </div>
+          !isActionItemsStage && (
+            <div className="text-xs text-slate-500 font-mono">
+              {isMine ? <span className="text-indigo-400 font-medium">Kartu Anda</span> : ''}
+            </div>
+          )
         )}
 
         {/* Action item select indicator in Action Items stage FR 4.2 */}
         {isActionItemsStage && (
           <div className="flex items-center justify-between w-full">
-            <div className="text-xs text-slate-400 font-mono">
-              Skor: <span className="font-bold text-rose-400">{card.score || 0}</span>
+            <div className="text-xs text-slate-400 font-mono flex items-center gap-1">
+              <ThumbsUp className="w-3 h-3 text-emerald-400" />
+              <span className="font-bold text-emerald-400">{card.upvotes || card.score || 0}</span>
             </div>
             <span
               className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg font-semibold transition ${

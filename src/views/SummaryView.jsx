@@ -191,7 +191,7 @@ export default function SummaryView({ roomState }) {
                     <div className="flex items-center justify-between text-[11px] text-slate-400 print:text-slate-600 font-mono">
                       <span>Anonim</span>
                       <span className="font-bold text-emerald-400 print:text-emerald-700">
-                        👍 {card.upvotes || 0} | 👎 {card.downvotes || 0}
+                        👍 {card.upvotes || 0} Upvote
                       </span>
                     </div>
                   </div>
@@ -226,7 +226,7 @@ export default function SummaryView({ roomState }) {
                     <div className="flex items-center justify-between text-[11px] text-slate-400 print:text-slate-600 font-mono">
                       <span>Anonim</span>
                       <span className="font-bold text-rose-400 print:text-rose-700">
-                        👍 {card.upvotes || 0} | 👎 {card.downvotes || 0}
+                        👍 {card.upvotes || 0} Upvote
                       </span>
                     </div>
                   </div>
