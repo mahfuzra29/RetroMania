@@ -12,6 +12,7 @@ export default function RetroCard({
   isSelectedForAction,
   rank,
   forceMasked = false,
+  isVoteDisabled = false,
 }) {
   const isWentWell = card.type === 'went_well';
   const isMasked = forceMasked || card.isMasked;
@@ -109,12 +110,21 @@ export default function RetroCard({
             {/* Upvote Button Only */}
             <button
               onClick={(e) => handleVote(e, 1)}
+              disabled={isVoteDisabled && card.myVote !== 1}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95 ${
                 card.myVote === 1
                   ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                  : isVoteDisabled
+                  ? 'bg-slate-800/40 text-slate-500 border border-slate-800 cursor-not-allowed opacity-50'
                   : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60'
               }`}
-              title={card.myVote === 1 ? 'Batalkan Upvote' : 'Upvote (Suka)'}
+              title={
+                card.myVote === 1
+                  ? 'Batalkan Upvote'
+                  : isVoteDisabled
+                  ? 'Batas kuota vote per sesi telah tercapai'
+                  : 'Upvote (Suka)'
+              }
             >
               <ThumbsUp className={`w-3.5 h-3.5 ${card.myVote === 1 ? 'fill-slate-950 text-slate-950' : 'text-emerald-400'}`} />
               <span>{card.upvotes || 0}</span>

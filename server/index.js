@@ -56,8 +56,8 @@ setInterval(() => {
 
 // REST API for Room Creation
 app.post('/api/rooms', (req, res) => {
-  const { name, sessionDurationMinutes, hostName } = req.body;
-  const result = roomManager.createRoom({ name, sessionDurationMinutes, hostName });
+  const { name, sessionDurationMinutes, maxVotesPerUser, hostName } = req.body;
+  const result = roomManager.createRoom({ name, sessionDurationMinutes, maxVotesPerUser, hostName });
   res.json({
     roomId: result.room.id,
     hostToken: result.hostToken,

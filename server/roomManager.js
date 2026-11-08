@@ -5,15 +5,20 @@ export class RoomManager {
     this.rooms = new Map();
   }
 
-  createRoom({ name, sessionDurationMinutes = 3, hostName }) {
+  createRoom({ name, sessionDurationMinutes = 3, maxVotesPerUser = 5, hostName }) {
     const roomId = nanoid(7).toLowerCase();
     const hostToken = nanoid(24);
     const hostParticipantId = nanoid(10);
+
+    const parsedMaxVotes = parseInt(maxVotesPerUser, 10);
+    // 0 or NaN or > 0. If 0, could mean unlimited or default to 5. Let's allow 1-20 or 0 for unlimited (default 5).
+    const validMaxVotes = Number.isInteger(parsedMaxVotes) && parsedMaxVotes >= 0 ? parsedMaxVotes : 5;
 
     const room = {
       id: roomId,
       name: name.trim() || 'Sprint Retrospective',
       sessionDurationMinutes: Math.max(1, parseInt(sessionDurationMinutes, 10) || 3),
+      maxVotesPerUser: validMaxVotes,
       hostToken,
       hostParticipantId,
       createdAt: Date.now(),
@@ -223,15 +228,29 @@ export class RoomManager {
     const room = this.rooms.get(roomId);
     if (!room) return null;
 
-    // Voting allowed only in voting or action_items stages
-    if (room.stage !== 'went_well_voting' && room.stage !== 'went_bad_voting' && room.stage !== 'action_items') {
+    // Voting allowed only in voting stages
+    if (room.stage !== 'went_well_voting' && room.stage !== 'went_bad_voting') {
       return null;
     }
 
     const card = room.cards.find(c => c.id === cardId);
     if (!card) return null;
 
+    // Determine current voting phase: 'went_well' or 'went_bad'
+    const currentPhase = room.stage === 'went_well_voting' ? 'went_well' : 'went_bad';
+    if (card.type !== currentPhase) return null;
+
     const currentVote = card.votes[participantId] || 0;
+
+    // If attempting to vote (not unvoting), check maximum vote limit per user per session stage
+    if (currentVote !== 1 && room.maxVotesPerUser > 0) {
+      const userVotesInPhase = room.cards.filter(c => c.type === currentPhase && c.votes[participantId] === 1).length;
+      if (userVotesInPhase >= room.maxVotesPerUser) {
+        // Limit reached, reject vote
+        return null;
+      }
+    }
+
     // Toggle logic: if user clicked the vote again, remove it
     if (currentVote === 1) {
       delete card.votes[participantId];
@@ -361,10 +380,18 @@ export class RoomManager {
       };
     });
 
+    const userVotesWentWell = room.cards.filter(c => c.type === 'went_well' && c.votes[participantId] === 1).length;
+    const userVotesWentBad = room.cards.filter(c => c.type === 'went_bad' && c.votes[participantId] === 1).length;
+
     return {
       id: room.id,
       name: room.name,
       sessionDurationMinutes: room.sessionDurationMinutes,
+      maxVotesPerUser: room.maxVotesPerUser,
+      userVotesCount: {
+        went_well: userVotesWentWell,
+        went_bad: userVotesWentBad,
+      },
       createdAt: room.createdAt,
       stage: room.stage,
       stageEndsAt: room.stageEndsAt,

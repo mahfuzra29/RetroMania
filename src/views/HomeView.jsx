@@ -6,6 +6,7 @@ export default function HomeView({ onCreateRoom, isCreating }) {
   const [roomName, setRoomName] = useState('');
   const [hostName, setHostName] = useState('');
   const [sessionDurationMinutes, setSessionDurationMinutes] = useState(3);
+  const [maxVotesPerUser, setMaxVotesPerUser] = useState(5);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,6 +15,7 @@ export default function HomeView({ onCreateRoom, isCreating }) {
     onCreateRoom({
       name: roomName,
       sessionDurationMinutes: Number(sessionDurationMinutes),
+      maxVotesPerUser: Number(maxVotesPerUser),
       hostName,
     });
   };
@@ -90,6 +92,33 @@ export default function HomeView({ onCreateRoom, isCreating }) {
                     }`}
                   >
                     {mins}m
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Maksimal Voting Per Sesi
+                </label>
+                <span className="text-xs font-mono font-bold text-indigo-400">
+                  {maxVotesPerUser === 0 ? 'Tanpa Batas' : `${maxVotesPerUser} Vote / Orang`}
+                </span>
+              </div>
+              <div className="grid grid-cols-5 gap-1.5">
+                {[3, 5, 7, 10, 0].map((votes) => (
+                  <button
+                    key={votes}
+                    type="button"
+                    onClick={() => setMaxVotesPerUser(votes)}
+                    className={`py-2 rounded-xl text-xs font-bold border transition ${
+                      maxVotesPerUser === votes
+                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
+                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                    }`}
+                  >
+                    {votes === 0 ? '∞ Bebas' : `${votes}`}
                   </button>
                 ))}
               </div>

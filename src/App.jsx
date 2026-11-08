@@ -97,13 +97,13 @@ export default function App() {
   }, [roomId, displayName, hostToken, isPresentationView]);
 
   // Handle Create Room (FR 1.1)
-  const handleCreateRoom = async ({ name, sessionDurationMinutes, hostName }) => {
+  const handleCreateRoom = async ({ name, sessionDurationMinutes, maxVotesPerUser, hostName }) => {
     setIsCreating(true);
     try {
       const res = await fetch('/api/rooms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, sessionDurationMinutes, hostName }),
+        body: JSON.stringify({ name, sessionDurationMinutes, maxVotesPerUser, hostName }),
       });
       const data = await res.json();
 

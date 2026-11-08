@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Sparkles, Smile, Frown, Flame, SortDesc, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Sparkles, Smile, Frown, Flame, SortDesc, CheckCircle2, ThumbsUp, AlertCircle } from 'lucide-react';
 import RetroCard from '../components/RetroCard';
 import { sound } from '../utils/sound';
 
@@ -23,6 +23,13 @@ export default function VotingView({
   const nextDestinationTitle = isWentWell
     ? 'Lanjut ke Sesi "What Went Bad"'
     : 'Lanjut ke Sesi "Action Items"';
+
+  const maxVotes = roomState.maxVotesPerUser !== undefined ? roomState.maxVotesPerUser : 5;
+  const usedVotes = isWentWell
+    ? roomState.userVotesCount?.went_well || 0
+    : roomState.userVotesCount?.went_bad || 0;
+  const remainingVotes = maxVotes > 0 ? Math.max(0, maxVotes - usedVotes) : null;
+  const isVoteLimitReached = maxVotes > 0 && remainingVotes === 0;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
@@ -53,23 +60,39 @@ export default function VotingView({
           </div>
         </div>
 
-        {/* Next Stage Button (Host Only FR 3.4) */}
-        {isHost ? (
-          <button
-            onClick={() => {
-              sound.playChime();
-              onNextStage();
-            }}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition active:scale-95 shrink-0"
-          >
-            <span>{nextDestinationTitle}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        ) : (
-          <div className="text-xs text-slate-400 bg-slate-950/50 px-3.5 py-2 rounded-xl border border-slate-800">
-            Menunggu Host melanjutkan ke tahap berikutnya...
+        {/* Right side: Host Next Stage button & User Vote Quota Badge */}
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+          {/* User Vote Quota Badge */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs font-medium">
+            <ThumbsUp className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Sisa Kuota Vote:</span>
+            {maxVotes === 0 ? (
+              <span className="font-bold text-emerald-400">Tanpa Batas</span>
+            ) : (
+              <span className={`font-mono font-bold ${remainingVotes === 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {remainingVotes} / {maxVotes}
+              </span>
+            )}
           </div>
-        )}
+
+          {/* Next Stage Button (Host Only FR 3.4) */}
+          {isHost ? (
+            <button
+              onClick={() => {
+                sound.playChime();
+                onNextStage();
+              }}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition active:scale-95 shrink-0"
+            >
+              <span>{nextDestinationTitle}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <div className="text-xs text-slate-400 bg-slate-950/50 px-3.5 py-2 rounded-xl border border-slate-800">
+              Menunggu Host melanjutkan ke tahap berikutnya...
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Sorting Control FR 3.3 */}
@@ -107,6 +130,7 @@ export default function VotingView({
               isVotingStage={true}
               onVote={onVote}
               rank={sortByVotes ? idx + 1 : undefined}
+              isVoteDisabled={isVoteLimitReached && card.myVote !== 1}
             />
           ))}
         </div>
