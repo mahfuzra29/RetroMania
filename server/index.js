@@ -38,22 +38,18 @@ function broadcastRoomState(roomId) {
   }
 }
 
-// Background timer ticker to automatically end submission stages when timer finishes
+// Background timer ticker to notify clients when time ends without auto-advancing stage
+let lastTimerCheck = 0;
 setInterval(() => {
   const now = Date.now();
+  // Check once per second if any room timer has just expired
   for (const room of roomManager.rooms.values()) {
     if (
       (room.stage === 'went_well_submission' || room.stage === 'went_bad_submission') &&
       room.stageEndsAt &&
       now >= room.stageEndsAt
     ) {
-      if (room.stage === 'went_well_submission') {
-        room.stage = 'went_well_voting';
-      } else if (room.stage === 'went_bad_submission') {
-        room.stage = 'went_bad_voting';
-      }
-      room.stageEndsAt = null;
-      broadcastRoomState(room.id);
+      // Don't auto-advance stage! Host has choice to add time or close session.
     }
   }
 }, 1000);

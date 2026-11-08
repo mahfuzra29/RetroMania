@@ -82,11 +82,15 @@ export default function Timer({ stageEndsAt, totalMinutes = 3, isHost, onAddTime
 
           <button
             onClick={onEndEarly}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium text-xs transition active:scale-95"
-            title="Akhiri Sesi Lebih Awal"
+            className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl font-medium text-xs transition active:scale-95 ${
+              isTimeUp
+                ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/30 animate-pulse'
+                : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30'
+            }`}
+            title="Tutup Sesi & Buka Kartu"
           >
             <Square className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
-            <span>Akhiri Sesi</span>
+            <span>{isTimeUp ? 'Tutup Sesi & Buka Kartu' : 'Akhiri Sesi'}</span>
           </button>
         </div>
       )}

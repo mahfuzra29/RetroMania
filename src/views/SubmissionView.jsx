@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Send,
   Sparkles,
@@ -12,6 +12,7 @@ import {
   ExternalLink,
   ShieldAlert,
   CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import Timer from '../components/Timer';
 import PresentationView from './PresentationView';
@@ -35,9 +36,26 @@ export default function SubmissionView({
   const cardType = isWentWell ? 'went_well' : 'went_bad';
   const stageName = isWentWell ? 'What Went Well' : 'What Went Bad';
 
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
+  useEffect(() => {
+    if (!roomState.stageEndsAt) {
+      setIsTimeUp(false);
+      return;
+    }
+    const check = () => {
+      setIsTimeUp(Date.now() >= roomState.stageEndsAt);
+    };
+    check();
+    const interval = setInterval(check, 1000);
+    return () => clearInterval(interval);
+  }, [roomState.stageEndsAt]);
+
+  const canSubmit = isHost || !isTimeUp;
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || !canSubmit) return;
     sound.playPop();
     onAddCard({
       type: cardType,
@@ -165,42 +183,52 @@ export default function SubmissionView({
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <textarea
-                  rows={4}
-                  autoFocus
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder={
-                    isWentWell
-                      ? 'cth. Fitur pembayaran berhasil rilis lebih awal dan minim bug...'
-                      : 'cth. Keterlambatan respon API pihak ketiga menghambat proses testing...'
-                  }
-                  className="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl text-sm text-white placeholder-slate-500 outline-none transition resize-none"
-                />
+            {/* Time Up Banner for Non-Host */}
+            {!canSubmit ? (
+              <div className="bg-rose-950/30 border border-rose-500/30 rounded-2xl p-4 flex items-center gap-3 text-rose-300">
+                <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+                <div className="text-xs">
+                  <strong className="font-bold">Waktu Habis!</strong> Anda tidak dapat lagi mengirim kartu baru. Menunggu Host untuk menambah waktu atau menutup sesi.
+                </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>100% Anonim. Nama Anda tidak akan pernah dikaitkan pada kartu ini.</span>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="relative">
+                  <textarea
+                    rows={4}
+                    autoFocus
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder={
+                      isWentWell
+                        ? 'cth. Fitur pembayaran berhasil rilis lebih awal dan minim bug...'
+                        : 'cth. Keterlambatan respon API pihak ketiga menghambat proses testing...'
+                    }
+                    className="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl text-sm text-white placeholder-slate-500 outline-none transition resize-none"
+                  />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={!content.trim()}
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none shadow-md ${
-                    isWentWell
-                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
-                      : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/20'
-                  }`}
-                >
-                  <span>Kirim Masukan</span>
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </form>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>100% Anonim. Nama Anda tidak akan pernah dikaitkan pada kartu ini.</span>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!content.trim()}
+                    className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none shadow-md ${
+                      isWentWell
+                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
+                        : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/20'
+                    }`}
+                  >
+                    <span>Kirim Masukan</span>
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
 
           {/* List of ONLY My Private Cards */}

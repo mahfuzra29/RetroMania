@@ -119,10 +119,6 @@ export default function RetroCard({
               <ThumbsUp className={`w-3.5 h-3.5 ${card.myVote === 1 ? 'fill-slate-950 text-slate-950' : 'text-emerald-400'}`} />
               <span>{card.upvotes || 0}</span>
             </button>
-
-            {isMine && (
-              <span className="text-xs text-indigo-400 font-medium">Kartu Anda</span>
-            )}
           </div>
         ) : (
           !isActionItemsStage && (

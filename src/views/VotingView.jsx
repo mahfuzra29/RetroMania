@@ -10,7 +10,7 @@ export default function VotingView({
   onVote,
   onNextStage,
 }) {
-  const [sortByVotes, setSortByVotes] = useState(true);
+  const [sortByVotes, setSortByVotes] = useState(false);
   const isWentWell = roomState.stage === 'went_well_voting';
   const cardType = isWentWell ? 'went_well' : 'went_bad';
 
@@ -86,7 +86,7 @@ export default function VotingView({
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 transition"
         >
           <SortDesc className="w-3.5 h-3.5 text-indigo-400" />
-          <span>{sortByVotes ? 'Urutan: Vote Terbanyak' : 'Urutan: Waktu Input'}</span>
+          <span>{sortByVotes ? 'Urutan: Vote Terbanyak' : 'Urutan: Acak'}</span>
         </button>
       </div>
 

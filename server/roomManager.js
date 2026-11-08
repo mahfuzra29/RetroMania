@@ -171,6 +171,15 @@ export class RoomManager {
     if (type === 'went_well' && room.stage !== 'went_well_submission') return null;
     if (type === 'went_bad' && room.stage !== 'went_bad_submission') return null;
 
+    // If time is up, non-host user cannot submit cards anymore
+    const participant = room.participants[participantId];
+    const isHost = participant ? participant.isHost : false;
+    const isTimeUp = room.stageEndsAt && Date.now() >= room.stageEndsAt;
+
+    if (isTimeUp && !isHost) {
+      return null;
+    }
+
     const trimmed = (content || '').trim();
     if (!trimmed) return null;
 
@@ -179,8 +188,9 @@ export class RoomManager {
       type, // 'went_well' | 'went_bad'
       content: trimmed,
       authorId: participantId, // server tracks, never exposed publicly
+      randomOrder: Math.random(), // Random order seed for fair anonymous display
       createdAt: Date.now(),
-      votes: {}, // participantId -> 1 or -1
+      votes: {}, // participantId -> 1
       upvotes: 0,
       downvotes: 0,
       score: 0,
@@ -316,8 +326,12 @@ export class RoomManager {
     // Mask card contents during submission stages if not the author's card
     const isMaskingWentWell = room.stage === 'went_well_submission';
     const isMaskingWentBad = room.stage === 'went_bad_submission';
+    const isSubmissionStage = isMaskingWentWell || isMaskingWentBad;
 
-    const processedCards = room.cards.map(card => {
+    // Sort cards randomly using randomOrder so participants cannot identify card authors by order
+    const sortedCards = [...room.cards].sort((a, b) => (a.randomOrder || 0) - (b.randomOrder || 0));
+
+    const processedCards = sortedCards.map(card => {
       const isMine = card.authorId === participantId;
       const userVote = card.votes[participantId] || 0;
 
@@ -337,7 +351,8 @@ export class RoomManager {
         type: card.type,
         content: displayContent,
         isMasked,
-        isMine,
+        // When session is revealed (not submission stage), hide isMine completely so no one can identify their own or others' cards
+        isMine: isSubmissionStage ? isMine : false,
         createdAt: card.createdAt,
         upvotes: card.upvotes,
         downvotes: card.downvotes,
